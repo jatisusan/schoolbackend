@@ -72,6 +72,7 @@ model Enrollment {
   courseId Int @map("course_id")
   course Course @relation(fields: [courseId], references: [id])
   enrolledAt DateTime @default(now()) @map("enrolled_at")
+  @@unique([studentId, courseId]) // a student can enroll in a course only once
   status String @default("Active")
   @@map("enrollments")
 }
