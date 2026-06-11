@@ -24,10 +24,15 @@ const findStudentById = async (req, res) => {
 };
 
 const createStudent = async (req, res) => {
-  const { name, email, rollNo } = req.body;
+  const { name, email, rollNo, departmentId } = req.body;
 
   let createdStudent = await prisma.student.create({
-    data: { name, email, rollNo },
+    data: {
+      name,
+      email,
+      rollNo,
+      department: { connect: { id: Number(departmentId) } },
+    },
   });
   res.status(201).json({
     message: "Student created successfully",

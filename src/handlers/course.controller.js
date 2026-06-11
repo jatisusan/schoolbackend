@@ -1,7 +1,7 @@
 import prisma from "../db/prisma.js";
 
 const getAllCourses = async (req, res) => {
-  const courses = await prisma.course.findMany();
+  const courses = await prisma.course.findMany({ include: { teacher: true } });
   res
     .status(200)
     .json({ message: "All courses fetched successfully", data: courses });
@@ -19,12 +19,12 @@ const findCourseById = async (req, res) => {
 };
 
 const createCourse = async (req, res) => {
-  const { name, credits, departmentId } = req.body;
+  const { name, credits, teacherId } = req.body;
   const course = await prisma.course.create({
     data: {
       name,
       credits,
-      departmentId,
+      teacher: { connect: { id: Number(teacherId) } },
     },
   });
   res
@@ -32,9 +32,25 @@ const createCourse = async (req, res) => {
     .json({ message: "Course created successfully", data: course });
 };
 
-const updateCourse = async (req, res) => {};
+const updateCourse = async (req, res) => {
+  const { id } = req.params;
+  const { name, credits, teacherId } = req.body;
+  const updatedCourse = await prisma.course.update({
+    where: { id: Number(id) },
+    data: { name, credits, teacher: { connect: { id: Number(teacherId) } } },
+  });
+  res
+    .status(200)
+    .json({ message: "Course updated successfully", data: updatedCourse });
+};
 
-const deleteCourse = async (req, res) => {};
+const deleteCourse = async (req, res) => {
+  const { id } = req.params;
+  await prisma.course.delete({
+    where: { id: Number(id) },
+  });
+  res.json({ message: "Course deleted successfully" });
+};
 
 export {
   getAllCourses,

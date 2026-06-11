@@ -40,7 +40,25 @@ const createTeacher = async (req, res) => {
   });
 };
 
-const updateTeacher = async (req, res) => {};
+const updateTeacher = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, departmentId } = req.body;
+  const updatedTeacher = await prisma.teacher.update({
+    where: { id: Number(id) },
+    data: {
+      name,
+      email,
+      department: {
+        connect: { id: Number(departmentId) },
+      },
+    },
+  });
+
+  res.status(200).json({
+    message: "Teacher updated successfully",
+    data: updatedTeacher,
+  });
+};
 
 const deleteTeacher = async (req, res) => {
   const { id } = req.params;
