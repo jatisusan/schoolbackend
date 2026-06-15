@@ -2,8 +2,51 @@ import prisma from "../db/prisma.js";
 
 const getAllTeachers = async (req, res) => {
   const teachers = await prisma.teacher.findMany({
-    include: { department: true, courses: true },
+    include: {
+      department: { select: { id: true, name: true } },
+      courses: true,
+    },
   });
+  res
+    .status(200)
+    .json({ message: "All teachers fetched successfully", data: teachers });
+};
+
+// sorting with orderBy
+export const sortTeachers = async (req, res) => {
+  const teachers = await prisma.teacher.findMany({
+    orderBy: { name: "asc" },
+  });
+  res
+    .status(200)
+    .json({ message: "Teachers sorted successfully", data: teachers });
+};
+
+// filtering with where
+export const filterTeachers = async (req, res) => {
+  const teachers = await prisma.teacher.findMany({
+    where: {
+      name: {
+        gte: "a",
+      },
+    },
+  });
+
+  res.json({
+    message: "Filtered teachers successfully",
+    data: teachers,
+  });
+};
+
+export const getAllTeachersWithSelect = async (req, res) => {
+  const teachers = await prisma.teacher.findMany({
+    select: {
+      id: true,
+      name: true,
+      department: { select: { id: true, name: true } },
+    },
+  });
+
   res
     .status(200)
     .json({ message: "All teachers fetched successfully", data: teachers });
@@ -31,6 +74,24 @@ const createTeacher = async (req, res) => {
       email,
       department: {
         connect: { id: Number(departmentId) },
+      },
+    },
+  });
+  res.status(201).json({
+    message: "Teacher created successfully",
+    data: newTeacher,
+  });
+};
+
+// using create prisma relation
+const createTeacherWithDepartment = async (req, res) => {
+  const { name, email, departmentName } = req.body;
+  const newTeacher = await prisma.teacher.create({
+    data: {
+      name,
+      email,
+      department: {
+        create: { name: departmentName },
       },
     },
   });
@@ -73,6 +134,7 @@ export {
   getAllTeachers,
   findTeacherById,
   createTeacher,
+  createTeacherWithDepartment,
   updateTeacher,
   deleteTeacher,
 };
