@@ -1,4 +1,10 @@
 import prisma from "../db/prisma.js";
+import z from "zod";
+import {
+  createTeacherValidationSchema,
+  createTeacherWithDepartmentValidationSchema,
+  updateTeacherValidationSchema,
+} from "../validators/zod_validator.js";
 
 const getAllTeachers = async (req, res) => {
   const teachers = await prisma.teacher.findMany({
@@ -67,6 +73,20 @@ const findTeacherById = async (req, res) => {
 };
 
 const createTeacher = async (req, res) => {
+  let result = createTeacherValidationSchema.safeParse(req.body);
+  if (!result.success) {
+    let errors = result.error.issues.map((err) => {
+      return {
+        field: err.path[0],
+        message: err.message,
+      };
+    });
+
+    return res.status(400).json({
+      message: "Validation failed",
+      errors,
+    });
+  }
   const { name, email, departmentId } = req.body;
   const newTeacher = await prisma.teacher.create({
     data: {
@@ -85,40 +105,72 @@ const createTeacher = async (req, res) => {
 
 // using create prisma relation
 const createTeacherWithDepartment = async (req, res) => {
-  const { name, email, departmentName } = req.body;
-  const newTeacher = await prisma.teacher.create({
-    data: {
-      name,
-      email,
-      department: {
-        create: { name: departmentName },
+  try {
+    createTeacherWithDepartmentValidationSchema.parse(req.body);
+    const { name, email, departmentName } = req.body;
+    const newTeacher = await prisma.teacher.create({
+      data: {
+        name,
+        email,
+        department: {
+          create: { name: departmentName },
+        },
       },
-    },
-  });
-  res.status(201).json({
-    message: "Teacher created successfully",
-    data: newTeacher,
-  });
+    });
+    res.status(201).json({
+      message: "Teacher created successfully",
+      data: newTeacher,
+    });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const updateTeacher = async (req, res) => {
-  const { id } = req.params;
-  const { name, email, departmentId } = req.body;
-  const updatedTeacher = await prisma.teacher.update({
-    where: { id: Number(id) },
-    data: {
-      name,
-      email,
-      department: {
-        connect: { id: Number(departmentId) },
+  try {
+    updateTeacherValidationSchema.parse(req.body);
+    const { id } = req.params;
+    const { name, email, departmentId } = req.body;
+    const updatedTeacher = await prisma.teacher.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        email,
+        department: {
+          connect: { id: Number(departmentId) },
+        },
       },
-    },
-  });
+    });
 
-  res.status(200).json({
-    message: "Teacher updated successfully",
-    data: updatedTeacher,
-  });
+    res.status(200).json({
+      message: "Teacher updated successfully",
+      data: updatedTeacher,
+    });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const deleteTeacher = async (req, res) => {

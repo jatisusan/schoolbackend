@@ -1,4 +1,9 @@
 import prisma from "../db/prisma.js";
+import {
+  createDepartmentValidationSchema,
+  updateDepartmentValidationSchema,
+} from "../validators/zod_validator.js";
+import z from "zod";
 
 const getAllDepartments = async (req, res) => {
   const departments = await prisma.department.findMany({
@@ -26,30 +31,62 @@ const findDepartmentById = async (req, res) => {
 };
 
 const createDepartment = async (req, res) => {
-  const { name } = req.body;
-  const newDepartment = await prisma.department.create({
-    data: {
-      name,
-    },
-  });
-  res.status(201).json({
-    message: "Department created successfully",
-    data: newDepartment,
-  });
+  try {
+    createDepartmentValidationSchema.parse(req.body);
+    const { name } = req.body;
+    const newDepartment = await prisma.department.create({
+      data: {
+        name,
+      },
+    });
+    res.status(201).json({
+      message: "Department created successfully",
+      data: newDepartment,
+    });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const updateDepartment = async (req, res) => {
-  const { id } = req.params;
-  const { name } = req.body;
-  const updatedDepartment = await prisma.department.update({
-    where: { id: Number(id) },
-    data: { name },
-  });
+  try {
+    updateDepartmentValidationSchema.parse(req.body);
+    const { id } = req.params;
+    const { name } = req.body;
+    const updatedDepartment = await prisma.department.update({
+      where: { id: Number(id) },
+      data: { name },
+    });
 
-  res.status(200).json({
-    message: "Department updated successfully",
-    data: updatedDepartment,
-  });
+    res.status(200).json({
+      message: "Department updated successfully",
+      data: updatedDepartment,
+    });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const deleteDepartment = async (req, res) => {

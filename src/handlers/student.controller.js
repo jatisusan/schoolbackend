@@ -1,4 +1,6 @@
 import prisma from "../db/prisma.js";
+import z from "zod";
+import { createStudentValidationSchema, updateStudentValidationSchema } from "../validators/zod_validator.js";
 
 const getStudents = async (req, res) => {
   try {
@@ -24,34 +26,66 @@ const findStudentById = async (req, res) => {
 };
 
 const createStudent = async (req, res) => {
-  const { name, email, rollNo, departmentId } = req.body;
+  try {
+    createStudentValidationSchema.parse(req.body);
+    const { name, email, rollNo, departmentId } = req.body;
 
-  let createdStudent = await prisma.student.create({
-    data: {
-      name,
-      email,
-      rollNo,
-      department: { connect: { id: Number(departmentId) } },
-    },
-  });
-  res.status(201).json({
-    message: "Student created successfully",
-    data: createdStudent,
-  });
+    let createdStudent = await prisma.student.create({
+      data: {
+        name,
+        email,
+        rollNo,
+        department: { connect: { id: Number(departmentId) } },
+      },
+    });
+    res.status(201).json({
+      message: "Student created successfully",
+      data: createdStudent,
+    });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const updateStudent = async (req, res) => {
-  const { id } = req.params;
-  const { name, email, rollNo } = req.body;
+  try {
+    updateStudentValidationSchema.parse(req.body);
+    const { id } = req.params;
+    const { name, email, rollNo } = req.body;
 
-  let updatedStudent = await prisma.student.update({
-    where: { id: Number(id) },
-    data: { name, email, rollNo },
-  });
-  res.status(200).json({
-    message: "Student updated successfully",
-    data: updatedStudent,
-  });
+    let updatedStudent = await prisma.student.update({
+      where: { id: Number(id) },
+      data: { name, email, rollNo },
+    });
+    res.status(200).json({
+      message: "Student updated successfully",
+      data: updatedStudent,
+    });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const deleteStudent = async (req, res) => {

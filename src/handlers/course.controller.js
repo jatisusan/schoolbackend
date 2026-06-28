@@ -1,4 +1,9 @@
 import prisma from "../db/prisma.js";
+import z from "zod";
+import {
+  createCourseValidationSchema,
+  updateCourseValidationSchema,
+} from "../validators/zod_validator.js";
 
 const getAllCourses = async (req, res) => {
   const courses = await prisma.course.findMany({ include: { teacher: true } });
@@ -19,29 +24,61 @@ const findCourseById = async (req, res) => {
 };
 
 const createCourse = async (req, res) => {
-  const { name, credits, teacherId } = req.body;
-  const course = await prisma.course.create({
-    data: {
-      name,
-      credits,
-      teacher: { connect: { id: Number(teacherId) } },
-    },
-  });
-  res
-    .status(201)
-    .json({ message: "Course created successfully", data: course });
+  try {
+    createCourseValidationSchema.parse(req.body);
+    const { name, credits, teacherId } = req.body;
+    const course = await prisma.course.create({
+      data: {
+        name,
+        credits,
+        teacher: { connect: { id: Number(teacherId) } },
+      },
+    });
+    res
+      .status(201)
+      .json({ message: "Course created successfully", data: course });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const updateCourse = async (req, res) => {
-  const { id } = req.params;
-  const { name, credits, teacherId } = req.body;
-  const updatedCourse = await prisma.course.update({
-    where: { id: Number(id) },
-    data: { name, credits, teacher: { connect: { id: Number(teacherId) } } },
-  });
-  res
-    .status(200)
-    .json({ message: "Course updated successfully", data: updatedCourse });
+  try {
+    updateCourseValidationSchema.parse(req.body);
+    const { id } = req.params;
+    const { name, credits, teacherId } = req.body;
+    const updatedCourse = await prisma.course.update({
+      where: { id: Number(id) },
+      data: { name, credits, teacher: { connect: { id: Number(teacherId) } } },
+    });
+    res
+      .status(200)
+      .json({ message: "Course updated successfully", data: updatedCourse });
+  } catch (e) {
+    if (e instanceof z.ZodError) {
+      let errors = e.issues.map((err) => {
+        return {
+          field: err.path[0],
+          message: err.message,
+        };
+      });
+      res.status(400).json({
+        message: "Validation failed",
+        errors,
+      });
+    }
+  }
 };
 
 const deleteCourse = async (req, res) => {
