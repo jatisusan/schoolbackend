@@ -1,4 +1,4 @@
-import { createStudent, deleteStudent, findStudentById, getStudents, updateStudent } from "../handlers/student.controller.js";
+import { createStudent, deleteStudent, findStudentById, getStudents, updateStudent } from "../handlers/student_handler.js";
 import { Router } from "express";
 
 let router = Router();

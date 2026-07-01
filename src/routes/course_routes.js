@@ -1,4 +1,4 @@
-import { createCourse, findCourseById, getAllCourses, updateCourse, deleteCourse } from "../handlers/course.controller.js"
+import { createCourse, findCourseById, getAllCourses, updateCourse, deleteCourse } from "../handlers/course_handler.js"
 import { Router } from "express";
 
 let router = Router();

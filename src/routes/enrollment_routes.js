@@ -1,4 +1,4 @@
-import { findEnrollmentById, getAllEnrollments, enrollStudentInCourse } from "../handlers/enrollment.controller.js"
+import { findEnrollmentById, getAllEnrollments, enrollStudentInCourse } from "../handlers/enrollment_handler.js"
 import { Router } from "express";
 
 let router = Router();

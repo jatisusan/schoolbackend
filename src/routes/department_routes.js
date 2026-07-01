@@ -4,7 +4,7 @@ import {
   createDepartment,
   updateDepartment,
   deleteDepartment,
-} from "../handlers/department.controller.js";
+} from "../handlers/department_handler.js";
 
 import { Router } from "express";
 

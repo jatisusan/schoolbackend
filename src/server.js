@@ -1,11 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 
-import studentRouter from "./routes/student.routes.js";
-import courseRouter from "./routes/course.routes.js";
-import teacherRouter from "./routes/teacher.routes.js";
-import departmentRouter from "./routes/department.routes.js";
-import enrollmentRouter from "./routes/enrollment.routes.js";
+import studentRouter from "./routes/student_routes.js";
+import courseRouter from "./routes/course_routes.js";
+import teacherRouter from "./routes/teacher_routes.js";
+import departmentRouter from "./routes/department_routes.js";
+import enrollmentRouter from "./routes/enrollment_routes.js";
+import authRouter from "./routes/auth_routes.js";
 import {
   attachRequestTimestamp,
   checkApiKeyMiddleware,
@@ -68,7 +69,7 @@ app.use("/courses", courseRouter);
 app.use("/teachers", teacherRouter);
 app.use("/departments", departmentRouter);
 app.use("/enrollments", enrollmentRouter);
-
+app.use("/auth", authRouter);
 
 // response middleware to modify the error should be at last of all routes
 app.use(customErrorMiddleware);

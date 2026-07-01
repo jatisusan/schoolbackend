@@ -8,7 +8,7 @@ import {
   getAllTeachersWithSelect,
   sortTeachers,
   filterTeachers,
-} from "../handlers/teacher.controller.js";
+} from "../handlers/teacher_handler.js";
 import { Router } from "express";
 
 let router = Router();
