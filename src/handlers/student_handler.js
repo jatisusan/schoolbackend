@@ -1,6 +1,10 @@
-import prisma from "../db/prisma.js";
 import z from "zod";
-import { createStudentValidationSchema, updateStudentValidationSchema } from "../validators/zod_validator.js";
+
+import prisma from "../db/prisma.js";
+import {
+  createStudentValidationSchema,
+  updateStudentValidationSchema,
+} from "../validators/zod_validator.js";
 
 const getStudents = async (req, res) => {
   try {
@@ -62,11 +66,16 @@ const updateStudent = async (req, res) => {
   try {
     updateStudentValidationSchema.parse(req.body);
     const { id } = req.params;
-    const { name, email, rollNo } = req.body;
+    const { name, email, rollNo, departmentId } = req.body;
 
     let updatedStudent = await prisma.student.update({
       where: { id: Number(id) },
-      data: { name, email, rollNo },
+      data: {
+        name,
+        email,
+        rollNo,
+        department: { connect: { id: Number(departmentId) } },
+      },
     });
     res.status(200).json({
       message: "Student updated successfully",

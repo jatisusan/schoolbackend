@@ -1,5 +1,6 @@
-import prisma from "../db/prisma.js";
 import z from "zod";
+
+import prisma from "../db/prisma.js";
 import {
   createCourseValidationSchema,
   updateCourseValidationSchema,

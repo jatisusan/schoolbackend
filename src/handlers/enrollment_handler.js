@@ -14,7 +14,7 @@ const findEnrollmentById = async (req, res) => {
     where: { id: Number(id) },
   });
   if (!enrollment) {
-    return res.status(404).json({ error: "Enrollment not found" });
+    return res.status(404).json({ error: "Enrollment not found!" });
   }
   res
     .status(200)
@@ -58,7 +58,6 @@ const enrollStudentInCourse = async (req, res) => {
         student: true,
         course: true,
       },
-      
     });
 
     res.status(201).json({

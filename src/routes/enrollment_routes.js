@@ -1,9 +1,16 @@
-import { findEnrollmentById, getAllEnrollments, enrollStudentInCourse } from "../handlers/enrollment_handler.js"
 import { Router } from "express";
 
-let router = Router();
-router.get("/", getAllEnrollments)
-router.get("/:id", findEnrollmentById)
-router.post("/", enrollStudentInCourse)
+import {
+  findEnrollmentById,
+  getAllEnrollments,
+  enrollStudentInCourse,
+} from "../handlers/enrollment_handler.js";
+import { authMiddleware } from "../middlewares/auth_middleware.js";
 
-export default router
+let router = Router();
+
+router.get("/", authMiddleware, getAllEnrollments);
+router.get("/:id", authMiddleware, findEnrollmentById);
+router.post("/", authMiddleware, enrollStudentInCourse);
+
+export default router;

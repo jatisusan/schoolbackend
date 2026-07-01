@@ -1,3 +1,6 @@
+import { Router } from "express";
+
+import { authMiddleware } from "../middlewares/auth_middleware.js";
 import {
   getAllDepartments,
   findDepartmentById,
@@ -6,14 +9,12 @@ import {
   deleteDepartment,
 } from "../handlers/department_handler.js";
 
-import { Router } from "express";
-
 let router = Router();
 
 router.get("/", getAllDepartments);
 router.get("/:id", findDepartmentById);
-router.post("/", createDepartment);
-router.put("/:id", updateDepartment);
-router.delete("/:id", deleteDepartment);
+router.post("/", authMiddleware, createDepartment);
+router.put("/:id", authMiddleware, updateDepartment);
+router.delete("/:id", authMiddleware, deleteDepartment);
 
 export default router;

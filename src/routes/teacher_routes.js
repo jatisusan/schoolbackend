@@ -1,3 +1,5 @@
+import { Router } from "express";
+
 import {
   createTeacher,
   findTeacherById,
@@ -9,7 +11,7 @@ import {
   sortTeachers,
   filterTeachers,
 } from "../handlers/teacher_handler.js";
-import { Router } from "express";
+import { authMiddleware } from "../middlewares/auth_middleware.js";
 
 let router = Router();
 
@@ -17,10 +19,10 @@ router.get("/", getAllTeachers);
 router.get("/select", getAllTeachersWithSelect);
 router.get("/sort", sortTeachers);
 router.get("/filter", filterTeachers);
-router.get("/:id", findTeacherById);
-router.post("/", createTeacher);
-router.post("/with-depart", createTeacherWithDepartment);
-router.put("/:id", updateTeacher);
-router.delete("/:id", deleteTeacher);
+router.get("/:id", authMiddleware, findTeacherById);
+router.post("/", authMiddleware, createTeacher);
+router.post("/with-depart", authMiddleware, createTeacherWithDepartment);
+router.put("/:id", authMiddleware, updateTeacher);
+router.delete("/:id", authMiddleware, deleteTeacher);
 
 export default router;

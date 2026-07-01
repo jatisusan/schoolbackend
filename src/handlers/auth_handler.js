@@ -1,10 +1,11 @@
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+import prisma from "../db/prisma.js";
 import {
   loginValidatorSchema,
   registerValidatorSchema,
 } from "../validators/auth_validator.js";
-import bcrypt from "bcrypt";
-import prisma from "../db/prisma.js";
-import jwt from "jsonwebtoken";
 
 export let registerUser = async (req, res) => {
   // Step1: Validate the request data
@@ -31,7 +32,6 @@ export let registerUser = async (req, res) => {
     // bcrypt.hash(password, saltRounds)
     // bcrypt.hash runs the hashing algorithm 2^saltRounds times, making it slower and more secure against brute-force attacks.
     let hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
 
     // Step3: Save the user with hashed password to the database
     const user = await prisma.user.create({
@@ -42,11 +42,15 @@ export let registerUser = async (req, res) => {
       },
     });
 
-    // todo: exclude password from the response
+    // exclude password from the response
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      data: user,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      },
     });
   } catch (e) {
     res.status(500).json({
