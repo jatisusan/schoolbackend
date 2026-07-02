@@ -11,8 +11,8 @@ import {
 
 let router = Router();
 
-router.get("/", getAllDepartments);
-router.get("/:id", findDepartmentById);
+router.get("/", authMiddleware, getAllDepartments);
+router.get("/:id", authMiddleware, findDepartmentById);
 router.post("/", authMiddleware, createDepartment);
 router.put("/:id", authMiddleware, updateDepartment);
 router.delete("/:id", authMiddleware, deleteDepartment);
