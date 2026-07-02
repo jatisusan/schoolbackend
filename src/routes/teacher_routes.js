@@ -15,10 +15,10 @@ import { authMiddleware } from "../middlewares/auth_middleware.js";
 
 let router = Router();
 
-router.get("/", authMiddleware, getAllTeachers);
-router.get("/select", authMiddleware, getAllTeachersWithSelect);
-router.get("/sort", authMiddleware, sortTeachers);
-router.get("/filter", authMiddleware, filterTeachers);
+router.get("/", getAllTeachers);
+router.get("/select", getAllTeachersWithSelect);
+router.get("/sort", sortTeachers);
+router.get("/filter", filterTeachers);
 router.get("/:id", authMiddleware, findTeacherById);
 router.post("/", authMiddleware, createTeacher);
 router.post("/with-depart", authMiddleware, createTeacherWithDepartment);

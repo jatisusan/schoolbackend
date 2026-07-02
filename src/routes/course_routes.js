@@ -3,8 +3,8 @@ import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth_middleware.js";
 
 let router = Router();
-router.get("/", authMiddleware, getAllCourses)
-router.get("/:id", authMiddleware, findCourseById)
+router.get("/", getAllCourses)
+router.get("/:id", findCourseById)
 router.post("/", authMiddleware, createCourse)
 router.put("/:id", authMiddleware, updateCourse)
 router.delete("/:id", authMiddleware, deleteCourse)
