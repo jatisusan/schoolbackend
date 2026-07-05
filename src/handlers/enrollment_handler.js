@@ -8,7 +8,7 @@ const getAllEnrollments = async (req, res) => {
   });
 };
 
-const findEnrollmentById = async (req, res) => {
+const findEnrollmentById = async (req, res) => {      
   const { id } = req.params;
   const enrollment = await prisma.enrollment.findUnique({
     where: { id: Number(id) },

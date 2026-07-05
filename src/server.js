@@ -10,6 +10,8 @@ import authRouter from "./routes/auth_routes.js";
 
 import { loggerMiddleware } from "./middlewares/logger_middleware.js";
 import { customErrorMiddleware } from "./middlewares/error_middleware.js";
+import { upload } from "./middlewares/upload_middleware.js";
+import { uploadFileHandler } from "./handlers/upload_handler.js";
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(loggerMiddleware);
+
+app.post("/upload", upload.single("profile"), uploadFileHandler);
 
 app.use("/students", studentRouter);
 app.use("/courses", courseRouter);
