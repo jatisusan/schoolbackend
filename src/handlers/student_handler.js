@@ -108,10 +108,72 @@ const deleteStudent = async (req, res) => {
   });
 };
 
+const uploadStudentDocs = async (req, res) => {
+  const { id } = req.params;
+  if (!req.files || req.files.length === 0) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No files attached to request!" });
+  }
+
+  let docs = req.files.map((file) => `/uploads/${file.filename}`);
+
+  try {
+    let updatedStudent = await prisma.student.update({
+      where: { id: Number(id) },
+      data: {
+        docs,
+      },
+    });
+    res.status(200).json({
+      message: "Student documents uploaded successfully",
+      data: updatedStudent,
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      message: "Error uploading student documents",
+      stack: e.message,
+    });
+  }
+};
+
+const uploadStudentCard = async (req, res) => {
+  let { id } = req.params;
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No file attached to request!" });
+  }
+
+  let studentCard = `/uploads/${req.file.filename}`;
+
+  try {
+    let updatedStudent = await prisma.student.update({
+      where: { id: Number(id) },
+      data: {
+        studentCard,
+      },
+    });
+    res.status(200).json({
+      message: "Student card uploaded successfully",
+      data: updatedStudent,
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      message: "Error uploading student card!",
+      stack: e.message,
+    });
+  }
+};
+
 export {
   getStudents,
   findStudentById,
   createStudent,
   updateStudent,
   deleteStudent,
+  uploadStudentDocs,
+  uploadStudentCard,
 };

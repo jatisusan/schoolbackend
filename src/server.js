@@ -27,7 +27,6 @@ const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 app.use("/uploads", express.static(path.join(dirname, "uploads")));
 
-app.post("/upload", upload.single("profile"), uploadFileHandler);
 
 app.use("/students", studentRouter);
 app.use("/courses", courseRouter);

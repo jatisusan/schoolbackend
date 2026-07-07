@@ -25,9 +25,15 @@ model Student {
   departmentId Int @map("department_id")
   department Department @relation(fields: [departmentId], references: [id]) // belongs to one department
   enrollment Enrollment[]
+  docs String[] @map("documents") // array of strings for storing document URLs or paths
+  studentCard String? @map("student_card") // optional field for student card URL or path
   // for custom table name mapping use @@map
   @@map("students")
 }
+
+
+// Todo: if possible store the information of uploaded files (like real file name, size, type, and modified file name) for both docs (for each element or doc) and student Card : jsonb
+
 
 model Department {
   id Int @id @default(autoincrement())
