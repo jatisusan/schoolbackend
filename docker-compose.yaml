@@ -5,7 +5,7 @@ services:
     container_name: student_records_db
     restart: always
     env_file:
-      - .env  
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}

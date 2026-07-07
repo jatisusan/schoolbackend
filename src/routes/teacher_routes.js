@@ -19,7 +19,7 @@ router.get("/", getAllTeachers);
 router.get("/select", getAllTeachersWithSelect);
 router.get("/sort", sortTeachers);
 router.get("/filter", filterTeachers);
-router.get("/:id", authMiddleware, findTeacherById);
+router.get("/:id", findTeacherById);
 router.post("/", authMiddleware, createTeacher);
 router.post("/with-depart", authMiddleware, createTeacherWithDepartment);
 router.put("/:id", authMiddleware, updateTeacher);

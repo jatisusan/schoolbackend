@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import path from "path";
 
 import studentRouter from "./routes/student_routes.js";
 import courseRouter from "./routes/course_routes.js";
@@ -12,6 +13,7 @@ import { loggerMiddleware } from "./middlewares/logger_middleware.js";
 import { customErrorMiddleware } from "./middlewares/error_middleware.js";
 import { upload } from "./middlewares/upload_middleware.js";
 import { uploadFileHandler } from "./handlers/upload_handler.js";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
@@ -20,6 +22,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(loggerMiddleware);
+
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
+app.use("/uploads", express.static(path.join(dirname, "uploads")));
 
 app.post("/upload", upload.single("profile"), uploadFileHandler);
 

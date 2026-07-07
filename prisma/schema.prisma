@@ -85,5 +85,6 @@ model User {
   email String @unique
   password String // store hashed password, never store plain text passwords
   role String @default("user") 
+  profileImage String? @map("profile_image") // optional field for profile image URL
   @@map("users")
 }

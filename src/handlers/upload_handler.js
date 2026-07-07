@@ -1,4 +1,3 @@
-import { size } from "zod";
 
 export let uploadFileHandler = (req, res) => {
   if (!req.file) {

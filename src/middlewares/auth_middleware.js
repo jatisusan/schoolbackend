@@ -37,11 +37,15 @@ export let authMiddleware = async (req, res, next) => {
 
   try {
     // verify the token
-    let decodedDataFromToken = await jwt.verify(token, process.env.JWT_SECRET);
+    let decodedDataFromToken = jwt.verify(token, process.env.JWT_SECRET);
     // let exp = decodedDataFromToken.exp
 
     // attach user data to req for further use
-    req.payload = decodedDataFromToken.payload;
+    req.payload = {
+      id: decodedDataFromToken.id,
+      email: decodedDataFromToken.email,
+      role: decodedDataFromToken.role,
+    };
     next();
   } catch (e) {
     console.log("error: ", e.name);

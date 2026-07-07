@@ -1,10 +1,14 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import prisma from "../db/prisma.js";
 import {
   loginValidatorSchema,
   registerValidatorSchema,
+  updateProfileValidatorSchema,
 } from "../validators/auth_validator.js";
 
 export let registerUser = async (req, res) => {
@@ -126,6 +130,86 @@ export let loginUser = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Something went wrong while logging in the user",
+      error: e.message,
+    });
+  }
+};
+
+export let getUserProfile = async (req, res) => {
+  let id = req.payload.id;
+
+  try {
+    let user = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        profileImage: true,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User profile fetched successfully",
+      data: user,
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching the user profile",
+      error: e.message,
+    });
+  }
+};
+
+export let updateUserProfile = async (req, res) => {
+  let id = req.payload.id;
+  let vResult = updateProfileValidatorSchema.safeParse(req.body);
+  if (!vResult.success) {
+    let allErrors = vResult.error.issues.map((err) => {
+      return {
+        field: err.path[0],
+        message: err.message,
+      };
+    });
+    return res.status(400).json({
+      success: false,
+      message: "Validation failed!",
+      errors: allErrors,
+    });
+  }
+  let { username, email } = vResult.data;
+
+  let profileImage = `/uploads/${req.file.filename}`;
+
+  try {
+    let updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        username,
+        email,
+        profileImage,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "User profile updated successfully",
+      data: {
+        id: updatedUser.id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        profileImage: updatedUser.profileImage,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong while updating the user profile",
       error: e.message,
     });
   }
